@@ -17,8 +17,8 @@ Python 3.6 or later with the following `pip3 install -U -r requirements.txt` pac
 # Performance  
 
 | Method(*) | mIoU(%)  | Time(ms) | FPS | Memory(GB)| GPU |
-|:-:---|:-:---|:-:---|:-:---|:-:---|:-:---|
-| ICNet(paper)  | **67.7%**  | 33ms | 30.3 | **1.6** | TitanX
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| ICNet(pape:r)  | **67.7%**  | 33ms | 30.3 | **1.6** | TitanX
 | ICNet(ours)  | 66.7%  | **19ms** | **52.6** | 1.86    | GTX 1080Ti
 *: 
 - Input size: $2048x1024x3$, only train on trainning set of Cityscapes, and test on validation set of Cityscapes, using only one GTX 1080Ti card.
@@ -26,13 +26,13 @@ Python 3.6 or later with the following `pip3 install -U -r requirements.txt` pac
 
 # Demo
 |src|predict|
-|:-:---|:-:---|
-|./demo/frankfurt_000001_057181_leftImg8bit_src.png|./demo/frankfurt_000001_057181_leftImg8bit_mIoU_0.680.png|
+|:---:|:---:|
+|![src](https://github.com/liminn/ICNet/raw/master/demo/frankfurt_000001_057181_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/frankfurt_000001_057181_leftImg8bit_mIoU_0.680.png)|
 
-|./demo/lindau_000005_000019_leftImg8bit_src.png|./demo/lindau_000005_000019_leftImg8bit_mIoU_0.657.png |
+|![src](https://github.com/liminn/ICNet/raw/master/demo/lindau_000005_000019_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/lindau_000005_000019_leftImg8bit_mIoU_0.657.png) |
 
-|./demo/munster_000106_000019_leftImg8bit_src.png|./demo/munster_000106_000019_leftImg8bit_mIoU_0.672.png|
-|./demo/munster_000158_000019_leftImg8bit_src.png|./demo/munster_000158_000019_leftImg8bit_mIoU_0.658.png|
+|![src](https://github.com/liminn/ICNet/raw/master/demo/munster_000106_000019_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/munster_000106_000019_leftImg8bit_mIoU_0.672.png)|
+|![src](https://github.com/liminn/ICNet/raw/master/demo/munster_000158_000019_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/munster_000158_000019_leftImg8bit_mIoU_0.658.png)|
 
 # Usage
 ## Config
