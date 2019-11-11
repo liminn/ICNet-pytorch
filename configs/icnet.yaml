@@ -1,0 +1,27 @@
+### 1.Model
+model:
+  name: "icnet"
+  backbone: "resnet50"
+  base_size: 1024     # during augentation, shorter size will be resized between [base_size*0.5, base_size*2.0]
+  crop_size: 720      # end of augmentation, crop to trainning
+
+### 2.Optimizer
+optimizer:
+  init_lr: 0.01
+  momentum: 0.9
+  weight_decay: 0.0001
+
+### 3.Trainning 
+train:
+  specific_gpu_num: "1"     #  for example: "0", "1" or "0, 1"
+  train_batch_size: 25
+  valid_batch_size: 1
+  citycapes_root: "/home/datalab/ex_disk1/open_dataset/Citycapes/"
+  epochs: 200
+  log_iter: 10     # print log every log-iter 
+  val_epoch: 1     # run validation every val-epoch
+  ckpt_dir: "./ckpt_20191108/" # ckpt will saved here
+
+### 4.Test
+test:
+  ckpt_path: "./ckpt_20191108/icnet_resnet50_182_0.667_best_model.pth"
