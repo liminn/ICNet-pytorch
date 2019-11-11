@@ -34,7 +34,7 @@ class ICNet(SegBaseModel):
         # sub 2
         x_sub2 = F.interpolate(x, scale_factor=0.5, mode='bilinear', align_corners=True)
         _, x_sub2, _, _ = self.base_forward(x_sub2)
-
+        
         # sub 4
         x_sub4 = F.interpolate(x, scale_factor=0.25, mode='bilinear', align_corners=True)
         _, _, _, x_sub4 = self.base_forward(x_sub4)
