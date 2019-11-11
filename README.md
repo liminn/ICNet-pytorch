@@ -20,17 +20,15 @@ Python 3.6 or later with the following `pip3 install -U -r requirements.txt` pac
 |:---:|:---:|:---:|:---:|:---:|:---:|
 | ICNet(pape:r)  | **67.7%**  | 33ms | 30.3 | **1.6** | TitanX
 | ICNet(ours)  | 66.7%  | **19ms** | **52.6** | 1.86    | GTX 1080Ti
-*: 
-- Input size: $2048x1024x3$, only train on trainning set of Cityscapes, and test on validation set of Cityscapes, using only one GTX 1080Ti card.
-- pretrained models link: [icnet_resnet50_182_0.667_best_model.pth]()  
+ps: 
+- Only train on trainning set of Cityscapes, and test on validation set of Cityscapes, using only one GTX 1080Ti card. Input size is $2048x1024x3$.
+- pretrained models link: [icnet_resnet50_182_0.667_best_model.pth]
 
 # Demo
 |src|predict|
 |:---:|:---:|
 |![src](https://github.com/liminn/ICNet/raw/master/demo/frankfurt_000001_057181_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/frankfurt_000001_057181_leftImg8bit_mIoU_0.680.png)|
-
 |![src](https://github.com/liminn/ICNet/raw/master/demo/lindau_000005_000019_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/lindau_000005_000019_leftImg8bit_mIoU_0.657.png) |
-
 |![src](https://github.com/liminn/ICNet/raw/master/demo/munster_000106_000019_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/munster_000106_000019_leftImg8bit_mIoU_0.672.png)|
 |![src](https://github.com/liminn/ICNet/raw/master/demo/munster_000158_000019_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/munster_000158_000019_leftImg8bit_mIoU_0.658.png)|
 
