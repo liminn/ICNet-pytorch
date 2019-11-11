@@ -16,7 +16,7 @@ train:
   specific_gpu_num: "1"     # for example: "0", "1" or "0, 1"
   train_batch_size: 25      # adjust according to gpu resources
   valid_batch_size: 1
-  cityscapes_root: "/home/datalab/ex_disk1/open_dataset/Cityscapes/"
+  cityscapes_root: "/home/datalab/ex_disk1/bulang/data/Segmentation/Cityscapes"
   epochs: 200
   log_iter: 10        # print log every log-iter 
   val_epoch: 1        # run validation every val-epoch

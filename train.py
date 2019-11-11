@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 import torch.utils.data as data
 
-from dataset import CitysapesDataset
+from dataset import CityscapesDataset
 from models import ICNet
 from utils import ICNetLoss, IterationPolyLR, SegmentationMetric, setup_logger
 
@@ -18,8 +18,8 @@ class Trainer(object):
         self.dataparallel = torch.cuda.device_count() > 1
         
         # dataset and dataloader
-        train_dataset = CitysapesDataset(root = cfg["train"]["cityscapes_root"], split='train')
-        val_dataset = CitysapesDataset(root = cfg["train"]["cityscapes_root"], split='val')
+        train_dataset = CityscapesDataset(root = cfg["train"]["cityscapes_root"], split='train')
+        val_dataset = CityscapesDataset(root = cfg["train"]["cityscapes_root"], split='val')
         self.train_dataloader = data.DataLoader(dataset=train_dataset,
                                                 batch_size=cfg["train"]["train_batch_size"],
                                                 shuffle=True,

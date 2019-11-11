@@ -34,10 +34,10 @@ First, modify the configuration in the `configs/icnet.yaml` file:
 ```Python
 ### 3.Trainning 
 train:
-  specific_gpu_num: "1"        # for example: "0", "1" or "0, 1"
-  train_batch_size: 25         # adjust according to gpu resources
+  specific_gpu_num: "1"   # for example: "0", "1" or "0, 1"
+  train_batch_size: 25    # adjust according to gpu resources
   cityscapes_root: "/home/datalab/ex_disk1/open_dataset/Cityscapes/" 
-  ckpt_dir: "./ckpt/" # ckpt and trainning log will be saved here
+  ckpt_dir: "./ckpt/"     # ckpt and trainning log will be saved here
 ```
 Then, run: `python3 train.py`
 
