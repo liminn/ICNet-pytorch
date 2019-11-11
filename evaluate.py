@@ -11,7 +11,7 @@ import numpy as np
 
 from PIL import Image
 from torchvision import transforms
-from dataset import CityCapesDataset
+from dataset import CityscapesDataset
 from models import ICNet
 from utils import ICNetLoss, IterationPolyLR, SegmentationMetric, setup_logger, get_color_pallete
 
@@ -20,7 +20,7 @@ class Evaluator(object):
         self.cfg = cfg
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-        # val_dataset = CityCapesDataset(root = cfg["train"]["citycapes_root"], split='val')
+        # val_dataset = CityscapesDataset(root = cfg["train"]["cityscapes_root"], split='val')
         # self.val_dataloader = data.DataLoader(dataset=val_dataset,
         #                                       batch_size=cfg["train"]["valid_batch_size"],
         #                                       shuffle=False,
@@ -29,7 +29,7 @@ class Evaluator(object):
         #                                       drop_last=False)
 
         # get valid dataset images and targets
-        self.image_paths, self.mask_paths = _get_city_pairs(cfg["train"]["citycapes_root"], "val")
+        self.image_paths, self.mask_paths = _get_city_pairs(cfg["train"]["cityscapes_root"], "val")
 
         # create network
         self.model = ICNet(nclass = 19, backbone='resnet50').to(self.device)
@@ -144,12 +144,12 @@ def _get_city_pairs(folder, split='train'):
                 if filename.endswith('.png'):
                     """
                     Example:
-                        root = "./Citycapes/leftImg8bit/train/aachen"
+                        root = "./Cityscapes/leftImg8bit/train/aachen"
                         filename = "aachen_xxx_leftImg8bit.png"
-                        imgpath = "./Citycapes/leftImg8bit/train/aachen/aachen_xxx_leftImg8bit.png"
+                        imgpath = "./Cityscapes/leftImg8bit/train/aachen/aachen_xxx_leftImg8bit.png"
                         foldername = "aachen"
                         maskname = "aachen_xxx_gtFine_labelIds.png"
-                        maskpath = "./Citycapes/gtFine/train/aachen/aachen_xxx_gtFine_labelIds"
+                        maskpath = "./Cityscapes/gtFine/train/aachen/aachen_xxx_gtFine_labelIds"
                     """
                     imgpath = os.path.join(root, filename)
                     foldername = os.path.basename(os.path.dirname(imgpath))
@@ -164,9 +164,9 @@ def _get_city_pairs(folder, split='train'):
         return img_paths, mask_paths
 
     if split in ('train', 'val'):
-        # "./Citycapes/leftImg8bit/train" or "./Citycapes/leftImg8bit/val"
+        # "./Cityscapes/leftImg8bit/train" or "./Cityscapes/leftImg8bit/val"
         img_folder = os.path.join(folder, 'leftImg8bit/' + split)
-        # "./Citycapes/gtFine/train" or "./Citycapes/gtFine/val"
+        # "./Cityscapes/gtFine/train" or "./Cityscapes/gtFine/val"
         mask_folder = os.path.join(folder, 'gtFine/' + split)
         # img_paths与mask_paths的顺序是一一对应的
         img_paths, mask_paths = get_path_pairs(img_folder, mask_folder)

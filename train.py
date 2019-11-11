@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 import torch.utils.data as data
 
-from dataset import CityCapesDataset
+from dataset import CitysapesDataset
 from models import ICNet
 from utils import ICNetLoss, IterationPolyLR, SegmentationMetric, setup_logger
 

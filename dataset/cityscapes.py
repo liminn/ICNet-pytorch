@@ -7,7 +7,7 @@ from PIL import Image
 from torchvision import transforms
 from .segbase import SegmentationDataset
 
-class CityCapesDataset(SegmentationDataset):
+class CityscapesDataset(SegmentationDataset):
     """Cityscapes Semantic Segmentation Dataset.
     
     Parameters
@@ -37,7 +37,7 @@ class CityCapesDataset(SegmentationDataset):
     BASE_DIR = 'cityscapes'
     NUM_CLASS = 19
     IGNORE_INDEX=-1
-    NAME = "citycapes"
+    NAME = "cityscapes"
 
      # image transform
     """
@@ -50,8 +50,8 @@ class CityCapesDataset(SegmentationDataset):
         transforms.ToTensor(),
         transforms.Normalize([.485, .456, .406], [.229, .224, .225])])
 
-    def __init__(self, root = '/home/datalab/ex_disk1/open_dataset/Citycapes/', split='train', mode=None, transform=input_transform, **kwargs):
-        super(CityCapesDataset, self).__init__(root, split, mode, transform, **kwargs)
+    def __init__(self, root = '/home/datalab/ex_disk1/open_dataset/Cityscapes/', split='train', mode=None, transform=input_transform, **kwargs):
+        super(CityscapesDataset, self).__init__(root, split, mode, transform, **kwargs)
         # self.root = os.path.join(root, self.BASE_DIR)
         assert os.path.exists(self.root), "Please setup the dataset using ../datasets/cityscapes.py"
         self.images, self.mask_paths = _get_city_pairs(self.root, self.split)
@@ -116,7 +116,7 @@ class CityCapesDataset(SegmentationDataset):
         return 0
 
 """
-Citycapes文件夹构成：
+Cityscapes文件夹构成：
 Citicapes:
 - leftImg8bit
     - train
@@ -170,12 +170,12 @@ def _get_city_pairs(folder, split='train'):
                 if filename.endswith('.png'):
                     """
                     Example:
-                        root = "./Citycapes/leftImg8bit/train/aachen"
+                        root = "./Cityscapes/leftImg8bit/train/aachen"
                         filename = "aachen_xxx_leftImg8bit.png"
-                        imgpath = "./Citycapes/leftImg8bit/train/aachen/aachen_xxx_leftImg8bit.png"
+                        imgpath = "./Cityscapes/leftImg8bit/train/aachen/aachen_xxx_leftImg8bit.png"
                         foldername = "aachen"
                         maskname = "aachen_xxx_gtFine_labelIds.png"
-                        maskpath = "./Citycapes/gtFine/train/aachen/aachen_xxx_gtFine_labelIds"
+                        maskpath = "./Cityscapes/gtFine/train/aachen/aachen_xxx_gtFine_labelIds"
                     """
                     imgpath = os.path.join(root, filename)
                     foldername = os.path.basename(os.path.dirname(imgpath))
@@ -190,9 +190,9 @@ def _get_city_pairs(folder, split='train'):
         return img_paths, mask_paths
 
     if split in ('train', 'val'):
-        # "./Citycapes/leftImg8bit/train" or "./Citycapes/leftImg8bit/val"
+        # "./Cityscapes/leftImg8bit/train" or "./Cityscapes/leftImg8bit/val"
         img_folder = os.path.join(folder, 'leftImg8bit/' + split)
-        # "./Citycapes/gtFine/train" or "./Citycapes/gtFine/val"
+        # "./Cityscapes/gtFine/train" or "./Cityscapes/gtFine/val"
         mask_folder = os.path.join(folder, 'gtFine/' + split)
         # img_paths与mask_paths的顺序是一一对应的
         img_paths, mask_paths = get_path_pairs(img_folder, mask_folder)
@@ -212,4 +212,4 @@ def _get_city_pairs(folder, split='train'):
 
 
 if __name__ == '__main__':
-    dataset = CityCapesDataset()
+    pass

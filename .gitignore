@@ -111,7 +111,7 @@ venv.bak/
 # premodel
 weights/
 *.pkl
-*.pth
+#*.pth
 
 # dataset
 datasets/
