@@ -18,8 +18,13 @@ class Trainer(object):
         self.dataparallel = torch.cuda.device_count() > 1
         
         # dataset and dataloader
-        train_dataset = CityscapesDataset(root = cfg["train"]["cityscapes_root"], split='train')
-        val_dataset = CityscapesDataset(root = cfg["train"]["cityscapes_root"], split='val')
+        train_dataset = CityscapesDataset(root = cfg["train"]["cityscapes_root"], 
+                                          split='train', 
+                                          base_size=cfg["model"]["base_size"], 
+                                          crop_size=cfg["model"]["crop_size"])
+        val_dataset = CityscapesDataset(root = cfg["train"]["cityscapes_root"], split='val',
+                                          base_size=cfg["model"]["base_size"], 
+                                          crop_size=cfg["model"]["crop_size"])
         self.train_dataloader = data.DataLoader(dataset=train_dataset,
                                                 batch_size=cfg["train"]["train_batch_size"],
                                                 shuffle=True,

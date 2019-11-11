@@ -50,8 +50,8 @@ class CityscapesDataset(SegmentationDataset):
         transforms.ToTensor(),
         transforms.Normalize([.485, .456, .406], [.229, .224, .225])])
 
-    def __init__(self, root = '/home/datalab/ex_disk1/open_dataset/Cityscapes/', split='train', mode=None, transform=input_transform, **kwargs):
-        super(CityscapesDataset, self).__init__(root, split, mode, transform, **kwargs)
+    def __init__(self, root = '/home/datalab/ex_disk1/open_dataset/Cityscapes/', split='train', base_size=1024, crop_size=720, mode=None, transform=input_transform):
+        super(CityscapesDataset, self).__init__(root, split, mode, transform,base_size, crop_size)
         # self.root = os.path.join(root, self.BASE_DIR)
         assert os.path.exists(self.root), "Please setup the dataset using ../datasets/cityscapes.py"
         self.images, self.mask_paths = _get_city_pairs(self.root, self.split)

@@ -14,7 +14,7 @@ optimizer:
 ### 3.Trainning 
 train:
   specific_gpu_num: "1"     # for example: "0", "1" or "0, 1"
-  train_batch_size: 25      # adjust according to gpu resources
+  train_batch_size: 13      # adjust according to gpu resources
   valid_batch_size: 1
   cityscapes_root: "/home/datalab/ex_disk1/bulang/data/Segmentation/Cityscapes"
   epochs: 200
