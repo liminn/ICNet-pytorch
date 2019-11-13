@@ -2,7 +2,7 @@
 .DS_Store
 /ckpt_20191101
 configs/icnet_customize.yaml
-datasets/customization.py
+dataset/customization.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
