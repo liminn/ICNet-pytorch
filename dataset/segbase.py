@@ -9,10 +9,8 @@ __all__ = ['SegmentationDataset']
 class SegmentationDataset(object):
     """Segmentation Base Dataset"""
 
-    def __init__(self, root, split, mode, transform, base_size=1024, crop_size=720):
+    def __init__(self, split, mode, transform, base_size=1024, crop_size=720):
         """
-        root: string
-            path to dataset folder, such as "./datasets/citys"
         split: string
             'train', 'val' or 'test'
         mode:
@@ -22,10 +20,9 @@ class SegmentationDataset(object):
         base_size:
             shorter size will be resized between [short_size*0.5, short_size*2.0]
         crop_size:
-
+            
         """
         super(SegmentationDataset, self).__init__()
-        self.root = root
         self.transform = transform
         self.split = split
         self.mode = mode if mode is not None else split

@@ -14,18 +14,24 @@ Python 3.6 or later with the following `pip3 install -r requirements.txt`:
 # Performance  
 | Method | mIoU(%)  | Time(ms) | FPS | Memory(GB)| GPU |
 |:---:|:---:|:---:|:---:|:---:|:---:|
-| ICNet(paper)  | **67.7%**  | 33ms | 30.3 | **1.6** | TitanX|
-| ICNet(ours)  | 66.7%  | **19ms** | **52.6** | 1.86    | GTX 1080Ti|
+| ICNet(paper)  | 67.7%  | 33ms | 30.3 | **1.6** | TitanX|
+| ICNet(ours)  | **69.9%**  | **19ms** | **52.6** | 1.86    | GTX 1080Ti|
 - Base on Cityscapes dataset, only train on trainning set, and test on validation set, using only one GTX 1080Ti card, and input size of the test phase is 2048x1024x3.
 - For the performance of the original paper, you can query the "Table2" in the [paper](https://arxiv.org/abs/1704.08545). 
 - I have uploaded my pretrained models: `ckpt/icnet_resnet50_182_0.667_best_model.pth`
 
 # Demo
-|input|output|
+|image|predict|
 |:---:|:---:|
-|![src](https://github.com/liminn/ICNet/raw/master/demo/frankfurt_000001_057181_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/frankfurt_000001_057181_leftImg8bit_mIoU_0.680.png)|
-|![src](https://github.com/liminn/ICNet/raw/master/demo/lindau_000005_000019_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/lindau_000005_000019_leftImg8bit_mIoU_0.657.png) |
-|![src](https://github.com/liminn/ICNet/raw/master/demo/munster_000075_000019_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/munster_000075_000019_leftImg8bit_mIoU_0.672.png) |
+|![src](https://github.com/liminn/ICNet/raw/master/demo/frankfurt_000001_057181_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/frankfurt_000001_057181_leftImg8bit_mIoU_0.716.png)|
+|![src](https://github.com/liminn/ICNet/raw/master/demo/lindau_000005_000019_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/lindau_000005_000019_leftImg8bit_mIoU_0.700.png) |
+|![src](https://github.com/liminn/ICNet/raw/master/demo/munster_000061_000019_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/munster_000061_000019_leftImg8bit_mIoU_0.692.png) |
+|![src](https://github.com/liminn/ICNet/raw/master/demo/munster_000075_000019_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/munster_000075_000019_leftImg8bit_mIoU_0.690.png) |
+|![src](https://github.com/liminn/ICNet/raw/master/demo/munster_000106_000019_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/munster_000106_000019_leftImg8bit_mIoU_0.690.png) |
+|![src](https://github.com/liminn/ICNet/raw/master/demo/munster_000121_000019_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/munster_000121_000019_leftImg8bit_mIoU_0.678.png) |
+|![src](https://github.com/liminn/ICNet/raw/master/demo/munster_000124_000019_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/munster_000124_000019_leftImg8bit_mIoU_0.695.png) |
+|![src](https://github.com/liminn/ICNet/raw/master/demo/munster_000150_000019_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/munster_000150_000019_leftImg8bit_mIoU_0.695.png) |
+|![src](https://github.com/liminn/ICNet/raw/master/demo/munster_000158_000019_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/munster_000158_000019_leftImg8bit_mIoU_0.676.png) |
 - All the input images comes from the validation dataset of the Cityscaps, you can switch to the `demo/` directory to check more demo results.
 
 # Usage
@@ -35,7 +41,7 @@ First, modify the configuration in the `configs/icnet.yaml` file:
 ### 3.Trainning 
 train:
   specific_gpu_num: "1"   # for example: "0", "1" or "0, 1"
-  train_batch_size: 25    # adjust according to gpu resources
+  train_batch_size: 13    # adjust according to gpu resources
   cityscapes_root: "/home/datalab/ex_disk1/open_dataset/Cityscapes/" 
   ckpt_dir: "./ckpt/"     # ckpt and trainning log will be saved here
 ```
@@ -59,11 +65,17 @@ The structure of ICNet is mainly composed of `sub4`, `sub2`, `sub1` and `head`:
 - `head`: through the `CFF` module, the outputs of the three cascaded branches( `sub4`, `sub2` and `sub1`) are connected. Finaly, using 1x1 convolution and interpolation to get the output.
 
 During the training, I found that `pyramid pooling module` in `sub4` is very important. It can significantly improve the performance of the network and lightweight models. 
+
 In addition, I found that a small training technique can improve the performance of the model: 
 - set the learning rate of `sub4` to orginal initial learning rate(0.01), because it has backbone pretrained weights.
 - set the learning rate of `sub1` and `head` to 10 times initial learning rate(0.1), because there are no pretrained weights for them.
 
 This small training technique is really effective, it can improve the mIoU performance by 1~2 percentage points.
+
+The most import thing in data preprocessing phase is to set the "crop size" reasonably, you should set the "crop size" as close as possible to the input size of prediction phase, here is my experiment:
+- I set the "base size" to 520, it means resize the shorter side of image between 520x0.5 and 520x2, and set the "crop size" to 480, it means randomly crop 480x480 patch to train. The final best mIoU is 66.7%.
+- I set the "base size" to 1024, it means resize the shorter side of image between 1024x0.5 and 1024x2, and set the "crop size" to 720, it means randomly crop 720x720 patch to train. The final best mIoU is 69.9%.
+- Beacuse our target dataset is Cityscapes, the image size is 2058x1024, so the larger crop size(720x720) is better. I have not tried a larger crop size yet, beacuse it is time consuming and the mIoU is already high. But I think that a larger crop size will bring higher mIoU.
 
 Any other questions or my mistakes can be fedback in the comments section. I will replay as soon as possible.
 

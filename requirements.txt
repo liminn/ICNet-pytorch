@@ -6,3 +6,4 @@ Pillow==6.0.0
 PyYAML==5.1.2
 requests==2.22.0
 tqdm==4.38.0
+opencv-python

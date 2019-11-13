@@ -9,7 +9,6 @@ from torchsummary import summary
 __all__ = ['ICNet', 'get_icnet', 'get_icnet_resnet50_citys',
            'get_icnet_resnet101_citys', 'get_icnet_resnet152_citys']
 
-
 class ICNet(SegBaseModel):
     """Image Cascade Network"""
     
@@ -72,7 +71,6 @@ class _ICHead(nn.Module):
         outputs = list()
         x_cff_24, x_24_cls = self.cff_24(x_sub4, x_sub2)
         outputs.append(x_24_cls)
-        # 疑问：这里传错了吧，是x_cff_24而不是x_sub2
         # x_cff_12, x_12_cls = self.cff_12(x_sub2, x_sub1)
         x_cff_12, x_12_cls = self.cff_12(x_cff_24, x_sub1)
         outputs.append(x_12_cls)

@@ -3,10 +3,10 @@ import logging
 import os
 import sys
 
-__all__ = ['setup_logger']
+__all__ = ['SetupLogger']
 
 # reference from: https://github.com/facebookresearch/maskrcnn-benchmark/blob/master/maskrcnn_benchmark/utils/logger.py
-def setup_logger(name, save_dir, distributed_rank, filename="log.txt", mode='w'):
+def SetupLogger(name, save_dir, distributed_rank, filename="log.txt", mode='w'):
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
     # don't log results for the non-master process

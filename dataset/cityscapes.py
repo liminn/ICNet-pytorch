@@ -8,33 +8,6 @@ from torchvision import transforms
 from .segbase import SegmentationDataset
 
 class CityscapesDataset(SegmentationDataset):
-    """Cityscapes Semantic Segmentation Dataset.
-    
-    Parameters
-    ----------
-    root : string
-        Path to Cityscapes folder. Default is './datasets/citys'
-    split: string
-        'train', 'val' or 'test'
-    transform : callable, optional
-        A function that transforms the image
-    Examples
-    --------
-    >>> from torchvision import transforms
-    >>> import torch.utils.data as data
-    >>> # Transforms for Normalization
-    >>> input_transform = transforms.Compose([
-    >>>     transforms.ToTensor(),
-    >>>     transforms.Normalize((.485, .456, .406), (.229, .224, .225)),
-    >>> ])
-    >>> # Create Dataset
-    >>> trainset = CitySegmentation(split='train', transform=input_transform)
-    >>> # Create Training Loader
-    >>> train_data = data.DataLoader(
-    >>>     trainset, 4, shuffle=True,
-    >>>     num_workers=4)
-    """
-    BASE_DIR = 'cityscapes'
     NUM_CLASS = 19
     IGNORE_INDEX=-1
     NAME = "cityscapes"
@@ -50,10 +23,18 @@ class CityscapesDataset(SegmentationDataset):
         transforms.ToTensor(),
         transforms.Normalize([.485, .456, .406], [.229, .224, .225])])
 
-    def __init__(self, root = '/home/datalab/ex_disk1/open_dataset/Cityscapes/', split='train', base_size=1024, crop_size=720, mode=None, transform=input_transform):
-        super(CityscapesDataset, self).__init__(root, split, mode, transform,base_size, crop_size)
-        # self.root = os.path.join(root, self.BASE_DIR)
-        assert os.path.exists(self.root), "Please setup the dataset using ../datasets/cityscapes.py"
+    def __init__(self, root = './datasets/Cityscapes', split='train', base_size=1024, crop_size=720, mode=None, transform=input_transform):
+        """
+        Parameters
+            root : string
+                Path to Cityscapes folder. Default is './datasets/Cityscapes'
+            split: string
+                'train', 'val' or 'test'
+            transform : callable, optional
+                A function that transforms the image
+        """
+        super(CityscapesDataset, self).__init__(split, mode, transform,base_size, crop_size)
+        assert os.path.exists(self.root), "Error: data root path is wrong!"
         self.images, self.mask_paths = _get_city_pairs(self.root, self.split)
         assert (len(self.images) == len(self.mask_paths))
         if len(self.images) == 0:
@@ -71,14 +52,13 @@ class CityscapesDataset(SegmentationDataset):
                               -1, -1, 16, 17, 18])
         # [-1, ..., 33]
         self._mapping = np.array(range(-1, len(self._key) - 1)).astype('int32')
-
+        
     def _class_to_index(self, mask):
         # assert the value
         values = np.unique(mask)
         for value in values:
             assert (value in self._mapping)
         # 获取mask中各像素值对应于_mapping的索引
-        # 疑问：该行有必要吗？直接mask = mask + 1不就完事了？
         index = np.digitize(mask.ravel(), self._mapping, right=True)
         # 依据上述索引，根据_key，得到对应
         return self._key[index].reshape(mask.shape)
@@ -98,7 +78,7 @@ class CityscapesDataset(SegmentationDataset):
         else:
             assert self.mode == 'testval'
             img, mask = self._img_transform(img), self._mask_transform(mask)
-        # general resize, normalize and toTensor（疑问，没有resize也不用resize吧）
+        # general normalize and toTensor
         if self.transform is not None:
             img = self.transform(img)
         return img, mask, os.path.basename(self.images[index])

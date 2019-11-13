@@ -2,31 +2,22 @@ import os
 import time
 import datetime
 import yaml
-import cv2
 import shutil
 import torch
+import numpy as np
 import torch.nn as nn
 import torch.utils.data as data
-import numpy as np
 
 from PIL import Image
 from torchvision import transforms
-from dataset import CityscapesDataset
 from models import ICNet
-from utils import ICNetLoss, IterationPolyLR, SegmentationMetric, setup_logger, get_color_pallete
+from dataset import CityscapesDataset
+from utils import ICNetLoss, IterationPolyLR, SegmentationMetric, SetupLogger, get_color_pallete
 
 class Evaluator(object):
     def __init__(self, cfg):
         self.cfg = cfg
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-        # val_dataset = CityscapesDataset(root = cfg["train"]["cityscapes_root"], split='val')
-        # self.val_dataloader = data.DataLoader(dataset=val_dataset,
-        #                                       batch_size=cfg["train"]["valid_batch_size"],
-        #                                       shuffle=False,
-        #                                       num_workers=4,
-        #                                       pin_memory=True,
-        #                                       drop_last=False)
 
         # get valid dataset images and targets
         self.image_paths, self.mask_paths = _get_city_pairs(cfg["train"]["cityscapes_root"], "val")
@@ -50,19 +41,19 @@ class Evaluator(object):
         list_time = []
         lsit_pixAcc = []
         list_mIoU = []
-        #for i, (image, target, filename) in enumerate(self.val_dataloader):
+
         for i in range(len(self.image_paths)):
 
             image = Image.open(self.image_paths[i]).convert('RGB') # image shape: (W,H,3)
-            mask = Image.open(self.mask_paths[i])                   # mask shape: (W,H)
+            mask = Image.open(self.mask_paths[i])                  # mask shape: (W,H)
             
-            image = self._img_transform(image)                # image shape: (3,H,W) [0,1]
-            mask = self._mask_transform(mask)                 # mask shape: (H,w)
+            image = self._img_transform(image)                     # image shape: (3,H,W) [0,1]
+            mask = self._mask_transform(mask)                      # mask shape: (H,w)
 
             image = image.to(self.device)
             mask = mask.to(self.device)
 
-            image = torch.unsqueeze(image, 0)                 # image shape: (1,3,H,W) [0,1]
+            image = torch.unsqueeze(image, 0)                      # image shape: (1,3,H,W) [0,1]
 
             with torch.no_grad():
                 start_time = time.time()
@@ -79,9 +70,7 @@ class Evaluator(object):
             
             filename = os.path.basename(self.image_paths[i])
             prefix = filename.split('.')[0]
-            #print(filename)
-            
-            # 问题： 1.命名问题  2.颜色问题 3. 时间问题 4.占用显存问题
+
             # save pred 
             pred = torch.argmax(outputs[0], 1)                
             pred = pred.cpu().data.numpy()
@@ -96,7 +85,6 @@ class Evaluator(object):
             # save target
             mask = Image.open(self.mask_paths[i])                   # mask shape: (W,H)
             mask = self._class_to_index(np.array(mask).astype('int32'))
-            #mask = np.array(mask).astype('int32') - 1
             mask = get_color_pallete(mask, "citys")
             mask.save(os.path.join(outdir, prefix + '_label.png'))
 
@@ -130,9 +118,8 @@ class Evaluator(object):
         for value in values:
             assert (value in self._mapping)
         # 获取mask中各像素值对应于_mapping的索引
-        # 疑问：该行有必要吗？直接mask = mask + 1不就完事了？
         index = np.digitize(mask.ravel(), self._mapping, right=True)
-        # 依据上述索引，根据_key，得到对应
+        # 依据上述索引index，根据_key，得到对应的mask图
         return self._key[index].reshape(mask.shape)
 
 def _get_city_pairs(folder, split='train'):
@@ -143,7 +130,7 @@ def _get_city_pairs(folder, split='train'):
             for filename in files:
                 if filename.endswith('.png'):
                     """
-                    Example:
+                    For example:
                         root = "./Cityscapes/leftImg8bit/train/aachen"
                         filename = "aachen_xxx_leftImg8bit.png"
                         imgpath = "./Cityscapes/leftImg8bit/train/aachen/aachen_xxx_leftImg8bit.png"
@@ -188,15 +175,15 @@ if __name__ == '__main__':
     print("torch.cuda.is_available(): {}".format(torch.cuda.is_available()))
     print("torch.cuda.device_count(): {}".format(torch.cuda.device_count()))
     print("torch.cuda.current_device(): {}".format(torch.cuda.current_device()))
-
-    outdir = os.path.join(cfg["train"]["ckpt_dir"], "evaluate_output_2")
+    
+    outdir = os.path.join(cfg["train"]["ckpt_dir"], "evaluate_output")
     if not os.path.exists(outdir):
         os.makedirs(outdir)
     
-    logger = setup_logger(name = "semantic_segmentation", 
-                          save_dir = cfg["train"]["ckpt_dir"], 
-                          distributed_rank = 0, 
-                          filename='{}_{}_evaluate_log.txt'.format(cfg["model"]["name"], cfg["model"]["backbone"]))
+    logger = SetupLogger(name = "semantic_segmentation", 
+                         save_dir = cfg["train"]["ckpt_dir"], 
+                         distributed_rank = 0, 
+                         filename='{}_{}_evaluate_log.txt'.format(cfg["model"]["name"], cfg["model"]["backbone"]))
 
     evaluator = Evaluator(cfg)
     evaluator.eval()

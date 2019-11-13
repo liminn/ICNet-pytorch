@@ -24,4 +24,4 @@ train:
 
 ### 4.Test
 test:
-  ckpt_path: "./ckpt/icnet_resnet50_182_0.667_best_model.pth" # set the pretrained model path correctly
+  ckpt_path: "./ckpt/icnet_resnet50_196_0.699_best_model.pth" # set the pretrained model path correctly

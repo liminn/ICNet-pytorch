@@ -2,19 +2,18 @@ import os
 import time
 import datetime
 import yaml
-import shutil
 import torch
 import torch.nn as nn
 import torch.utils.data as data
 
 from dataset import CityscapesDataset
 from models import ICNet
-from utils import ICNetLoss, IterationPolyLR, SegmentationMetric, setup_logger
+from utils import ICNetLoss, IterationPolyLR, SegmentationMetric, SetupLogger
 
 class Trainer(object):
     def __init__(self, cfg):
         self.cfg = cfg
-        self.device = torch.device("cuda")
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.dataparallel = torch.cuda.device_count() > 1
         
         # dataset and dataloader
@@ -22,9 +21,10 @@ class Trainer(object):
                                           split='train', 
                                           base_size=cfg["model"]["base_size"], 
                                           crop_size=cfg["model"]["crop_size"])
-        val_dataset = CityscapesDataset(root = cfg["train"]["cityscapes_root"], split='val',
-                                          base_size=cfg["model"]["base_size"], 
-                                          crop_size=cfg["model"]["crop_size"])
+        val_dataset = CityscapesDataset(root = cfg["train"]["cityscapes_root"], 
+                                        split='val',
+                                        base_size=cfg["model"]["base_size"], 
+                                        crop_size=cfg["model"]["crop_size"])
         self.train_dataloader = data.DataLoader(dataset=train_dataset,
                                                 batch_size=cfg["train"]["train_batch_size"],
                                                 shuffle=True,
@@ -38,7 +38,6 @@ class Trainer(object):
                                               pin_memory=True,
                                               drop_last=False)
         
-        # 只针对一个GPU
         self.iters_per_epoch = len(self.train_dataloader)
         self.max_iters = cfg["train"]["epochs"] * self.iters_per_epoch
 
@@ -81,8 +80,6 @@ class Trainer(object):
         self.epochs = cfg["train"]["epochs"]
         self.current_epoch = 0
         self.current_iteration = 0
-        
-        
         
     def train(self):
         epochs, max_iters = self.epochs, self.max_iters
@@ -130,8 +127,8 @@ class Trainer(object):
                             self.current_epoch, self.epochs, 
                             self.current_iteration, max_iters, 
                             self.optimizer.param_groups[0]['lr'], 
-                            loss.item(),
-			    mIoU,
+                            loss.item(), 
+                            mIoU,
                             str(datetime.timedelta(seconds=int(time.time() - start_time))), 
                             eta_string))
 		
@@ -174,7 +171,6 @@ class Trainer(object):
             list_mIoU.append(mIoU)
             list_loss.append(loss.item())
 
-            #logger.info("Sample: {:d}, Validation pixAcc: {:.3f}, mIoU: {:.3f}".format(i + 1, pixAcc, mIoU))
         average_pixAcc = sum(lsit_pixAcc)/len(lsit_pixAcc)
         average_mIoU = sum(list_mIoU)/len(list_mIoU)
         average_loss = sum(list_loss)/len(list_loss)
@@ -196,11 +192,9 @@ def save_checkpoint(model, cfg, epoch = 0, is_best=False, mIoU = 0.0, dataparall
     filename = os.path.join(directory, filename)
     if dataparallel:
         model = model.module
-    #torch.save(model.state_dict(), filename)
     if is_best:
         best_filename = '{}_{}_{}_{:.3f}_best_model.pth'.format(cfg["model"]["name"], cfg["model"]["backbone"],epoch,mIoU)
         best_filename = os.path.join(directory, best_filename)
-	#shutil.copyfile(filename, best_filename)
         torch.save(model.state_dict(), best_filename)
         
 
@@ -211,7 +205,7 @@ if __name__ == '__main__':
         cfg = yaml.load(yaml_file.read())
         #print(cfg)
         #print(cfg["model"]["backbone"])
-        print(cfg["train"]["specific_gpu_num"])
+        #print(cfg["train"]["specific_gpu_num"])
     
     # Use specific GPU
     os.environ["CUDA_VISIBLE_DEVICES"] = str(cfg["train"]["specific_gpu_num"])
@@ -221,7 +215,7 @@ if __name__ == '__main__':
     print("torch.cuda.current_device(): {}".format(torch.cuda.current_device()))
 
     # Set logger
-    logger = setup_logger(name = "semantic_segmentation", 
+    logger = SetupLogger(name = "semantic_segmentation", 
                           save_dir = cfg["train"]["ckpt_dir"], 
                           distributed_rank = 0,
                           filename='{}_{}_log.txt'.format(cfg["model"]["name"], cfg["model"]["backbone"]))
