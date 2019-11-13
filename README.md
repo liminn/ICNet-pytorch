@@ -30,8 +30,6 @@ Python 3.6 or later with the following `pip3 install -r requirements.txt`:
 |![src](https://github.com/liminn/ICNet/raw/master/demo/munster_000106_000019_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/munster_000106_000019_leftImg8bit_mIoU_0.690.png) |
 |![src](https://github.com/liminn/ICNet/raw/master/demo/munster_000121_000019_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/munster_000121_000019_leftImg8bit_mIoU_0.678.png) |
 |![src](https://github.com/liminn/ICNet/raw/master/demo/munster_000124_000019_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/munster_000124_000019_leftImg8bit_mIoU_0.695.png) |
-|![src](https://github.com/liminn/ICNet/raw/master/demo/munster_000150_000019_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/munster_000150_000019_leftImg8bit_mIoU_0.695.png) |
-|![src](https://github.com/liminn/ICNet/raw/master/demo/munster_000158_000019_leftImg8bit_src.png)|![predict](https://github.com/liminn/ICNet/raw/master/demo/munster_000158_000019_leftImg8bit_mIoU_0.676.png) |
 - All the input images comes from the validation dataset of the Cityscaps, you can switch to the `demo/` directory to check more demo results.
 
 # Usage
@@ -59,23 +57,23 @@ Then, run: `python3 evaluate.py`
 # Discussion
 ![ICNet](https://github.com/liminn/ICNet/raw/master/ICNet.png)
 The structure of ICNet is mainly composed of `sub4`, `sub2`, `sub1` and `head`: 
-- `sub4`: basically a `pspnet`, the most difference is a modified `pyramid pooling module`.
-- `sub2`: the first three stages of `sub4`, `sub2` and `sub4` share these three phases convolutional layers.
+- `sub4`: basically a `pspnet`, the biggest difference is a modified `pyramid pooling module`.
+- `sub2`: the first three phases convolutional layers of `sub4`, `sub2` and `sub4` share these three phases convolutional layers.
 - `sub1`: three consecutive stried convolutional layers, to fastly downsample the original large-size input images
 - `head`: through the `CFF` module, the outputs of the three cascaded branches( `sub4`, `sub2` and `sub1`) are connected. Finaly, using 1x1 convolution and interpolation to get the output.
 
 During the training, I found that `pyramid pooling module` in `sub4` is very important. It can significantly improve the performance of the network and lightweight models. 
+
+The most import thing in data preprocessing phase is to set the `crop_size` reasonably, you should set the `crop_size` as close as possible to the input size of prediction phase, here is my experiment:
+- I set the `base_size` to 520, it means resize the shorter side of image between 520x0.5 and 520x2, and set the `crop size` to 480, it means randomly crop 480x480 patch to train. The final best mIoU is 66.7%.
+- I set the `base_size` to 1024, it means resize the shorter side of image between 1024x0.5 and 1024x2, and set the `crop_size` to 720, it means randomly crop 720x720 patch to train. The final best mIoU is 69.9%.
+- Beacuse our target dataset is Cityscapes, the image size is 2058x1024, so the larger `crop_size`(720x720) is better. I have not tried a larger `crop_size` yet, beacuse it is time consuming and the mIoU is already high. But I think that a larger `crop_size` will bring higher mIoU.
 
 In addition, I found that a small training technique can improve the performance of the model: 
 - set the learning rate of `sub4` to orginal initial learning rate(0.01), because it has backbone pretrained weights.
 - set the learning rate of `sub1` and `head` to 10 times initial learning rate(0.1), because there are no pretrained weights for them.
 
 This small training technique is really effective, it can improve the mIoU performance by 1~2 percentage points.
-
-The most import thing in data preprocessing phase is to set the "crop size" reasonably, you should set the "crop size" as close as possible to the input size of prediction phase, here is my experiment:
-- I set the "base size" to 520, it means resize the shorter side of image between 520x0.5 and 520x2, and set the "crop size" to 480, it means randomly crop 480x480 patch to train. The final best mIoU is 66.7%.
-- I set the "base size" to 1024, it means resize the shorter side of image between 1024x0.5 and 1024x2, and set the "crop size" to 720, it means randomly crop 720x720 patch to train. The final best mIoU is 69.9%.
-- Beacuse our target dataset is Cityscapes, the image size is 2058x1024, so the larger crop size(720x720) is better. I have not tried a larger crop size yet, beacuse it is time consuming and the mIoU is already high. But I think that a larger crop size will bring higher mIoU.
 
 Any other questions or my mistakes can be fedback in the comments section. I will replay as soon as possible.
 
