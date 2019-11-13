@@ -18,7 +18,6 @@ Python 3.6 or later with the following `pip3 install -r requirements.txt`:
 | ICNet(ours)  | **69.9%**  | **19ms** | **52.6** | 1.86    | GTX 1080Ti|
 - Base on Cityscapes dataset, only train on trainning set, and test on validation set, using only one GTX 1080Ti card, and input size of the test phase is 2048x1024x3.
 - For the performance of the original paper, you can query the "Table2" in the [paper](https://arxiv.org/abs/1704.08545). 
-- I have uploaded my pretrained models: `ckpt/icnet_resnet50_182_0.667_best_model.pth`
 
 # Demo
 |image|predict|
@@ -50,7 +49,7 @@ First, modify the configuration in the `configs/icnet.yaml` file:
 ```Python
 ### 4.Test
 test:
-  ckpt_path: "./ckpt/icnet_resnet50_182_0.667_best_model.pth"  # set the pretrained model path correctly
+  ckpt_path: "./ckpt/icnet_resnet50_196_0.699_best_model.pth"  # set the pretrained model path correctly
 ```
 Then, run: `python3 evaluate.py`
 
