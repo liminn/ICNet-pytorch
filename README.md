@@ -66,7 +66,7 @@ During the training, I found that `pyramid pooling module` in `sub4` is very imp
 The most import thing in data preprocessing phase is to set the `crop_size` reasonably, you should set the `crop_size` as close as possible to the input size of prediction phase, here is my experiment:
 - I set the `base_size` to 520, it means resize the shorter side of image between 520x0.5 and 520x2, and set the `crop size` to 480, it means randomly crop 480x480 patch to train. The final best mIoU is 66.7%.
 - I set the `base_size` to 1024, it means resize the shorter side of image between 1024x0.5 and 1024x2, and set the `crop_size` to 720, it means randomly crop 720x720 patch to train. The final best mIoU is 69.9%.
-- Beacuse our target dataset is Cityscapes, the image size is 2058x1024, so the larger `crop_size`(720x720) is better. I have not tried a larger `crop_size` yet, beacuse it is time consuming and the mIoU is already high. But I think that a larger `crop_size` will bring higher mIoU.
+- Beacuse our target dataset is Cityscapes, the image size is 2048x1024, so the larger `crop_size`(720x720) is better. I have not tried a larger `crop_size`(such as 960x960 or 1024x1024) yet, beacuse it is time consuming and the mIoU is already high. But I think that a larger `crop_size` will bring higher mIoU.
 
 In addition, I found that a small training technique can improve the performance of the model: 
 - set the learning rate of `sub4` to orginal initial learning rate(0.01), because it has backbone pretrained weights.
