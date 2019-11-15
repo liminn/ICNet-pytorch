@@ -73,10 +73,13 @@ def batch_pix_accuracy(output, target):
     target = target.long() + 1
 
     pixel_labeled = torch.sum(target > 0).item()
-    pixel_correct = torch.sum((predict == target) * (target > 0)).item()
+    try:
+        pixel_correct = torch.sum((predict == target) * (target > 0)).item()
+    except:
+        print("predict size: {}, target size: {}, ".format(predict.size(), target.size()))
     assert pixel_correct <= pixel_labeled, "Correct area should be smaller than Labeled"
     return pixel_correct, pixel_labeled
-
+    
 
 def batch_intersection_union(output, target, nclass):
     """mIoU"""

@@ -33,7 +33,7 @@ class CityscapesDataset(SegmentationDataset):
             transform : callable, optional
                 A function that transforms the image
         """
-        super(CityscapesDataset, self).__init__(split, mode, transform,base_size, crop_size)
+        super(CityscapesDataset, self).__init__(root, split, mode, transform,base_size, crop_size)
         assert os.path.exists(self.root), "Error: data root path is wrong!"
         self.images, self.mask_paths = _get_city_pairs(self.root, self.split)
         assert (len(self.images) == len(self.mask_paths))
